@@ -8,6 +8,7 @@
 using namespace std;
 
 #include "TChain.h"
+#include "TGraph.h"
 #include "TH1.h"
 #include "TFile.h"
 #include "TSystem.h"
@@ -48,10 +49,11 @@ public :
   TH1D* anueFluxHisto;
   TH1D* numuCCHisto;
   TGraph *genieXsecNumuCC;
-  TFile* f = new TFile("NuMIFlux.root", "RECREATE");
+  TFile* f;
 
 
-  NuMIFlux(string pattern="/uboone/data/flux/numi/v2/flugg_mn000z200i_rp11_lowth_pnut_f112c0f093bbird/flugg_mn000z200i_rp11_bs1.1_pnut_lowth_f112c0f093bbird_0*.root");
+  NuMIFlux(std::string path="/uboone/app/users/mdeltutt/NuMIFlux",
+	   string pattern="/uboone/data/flux/numi/v2/flugg_mn000z200i_rp11_lowth_pnut_f112c0f093bbird/flugg_mn000z200i_rp11_bs1.1_pnut_lowth_f112c0f093bbird_0*.root");
 //"/uboone/data/flux/numi/current/flugg_mn000z200i_20101117.gpcfgrid_lowth/flugg_mn000z200i_20101117.gpcfgrid_lowth_00*.root"
 //
   virtual ~NuMIFlux();
@@ -68,16 +70,19 @@ public :
 
 #ifdef NuMIFlux_cxx
 
-NuMIFlux::NuMIFlux(string pattern) {
-
-  const char* path = "/uboone/app/users/mdeltutt/NuMIFlux";
-  if ( path ) {
+NuMIFlux::NuMIFlux(std::string path, string pattern)
+  : f(NULL) {
+  
+  f = new TFile("NuMIFlux.root", "RECREATE");
+  
+  ///const char* path = "/uboone/app/users/mdeltutt/NuMIFlux";
+  if ( path!="" ) {
     TString libs = gSystem->GetDynamicPath();
     libs += ":";
-    libs += path;
+    libs += path.c_str();
     //libs += "/lib";
     gSystem->SetDynamicPath(libs.Data());       
-    gSystem->Load("FluxNtuple_C.so");
+    //gSystem->Load("FluxNtuple_C.so");
   }
 
   cflux = new TChain("h10");
